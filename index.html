@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>200iq.sol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080b10;
+      --surface: #0e1420;
+      --surface2: #141c2e;
+      --border: #1e2d47;
+      --accent: #9945ff;
+      --accent2: #14f195;
+      --accent3: #fb8c00;
+      --text: #e8eaf0;
+      --muted: #5a6a85;
+      --card-bg: #0d1525;
+      --glow: rgba(153,69,255,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── STARFIELD ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--d) ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: var(--min-o); transform: scale(1); }
+      to   { opacity: var(--max-o); transform: scale(1.4); }
+    }
+
+    /* ── LAYOUT ── */
+    #app { position: relative; z-index: 1; }
+
+    /* ── HERO ── */
+    header {
+      padding: 80px 40px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+      animation: fadeUp .8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      border: 1px solid var(--accent2);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    h1.site-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 9vw, 6rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #9945ff 0%, #14f195 60%, #fb8c00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -2px;
+    }
+
+    .sol-sub {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .about-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #a0aec0;
+      max-width: 560px;
+      margin: 0 auto 36px;
+    }
+
+    /* ── TIP BOX ── */
+    .tip-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 22px;
+      margin: 0 auto 16px;
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s;
+      position: relative;
+    }
+    .tip-box:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 20px rgba(20,241,149,.12);
+    }
+    .tip-box .sol-logo {
+      font-size: 22px;
+    }
+    .tip-box .tip-inner {
+      text-align: left;
+    }
+    .tip-box .tip-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .tip-box .tip-addr {
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: 1px;
+    }
+    .copy-msg {
+      position: absolute;
+      top: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent2);
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+    }
+    .copy-msg.show { opacity: 1; }
+
+    .tip-hint {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* ── NAV PILLS ── */
+    .gallery-nav {
+      max-width: 1200px;
+      margin: 0 auto 50px;
+      padding: 0 24px;
+      animation: fadeUp .8s .2s ease both;
+    }
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    a.nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    a.nav-pill:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(153,69,255,.08);
+    }
+    .pill-count {
+      font-size: 10px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      max-width: 1200px;
+      margin: 0 auto 56px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-divider .div-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .section-divider::before, .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+    .section-divider::before {
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+    .section-divider::after {
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── GALLERY ── */
+    #gallery {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .collection-block {
+      margin-bottom: 64px;
+      scroll-margin-top: 30px;
+    }
+
+    .col-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2.col-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .col-count {
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      font-family: 'Space Mono', monospace;
+      background: rgba(153,69,255,.1);
+      border: 1px solid rgba(153,69,255,.25);
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+
+    .nft-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .nft-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .nft-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px var(--glow);
+    }
+
+    .nft-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: var(--surface2);
+    }
+    .nft-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .3s;
+    }
+    .nft-card:hover .nft-img-wrap img {
+      transform: scale(1.08);
+    }
+
+    .nft-label {
+      font-size: 10px;
+      color: var(--muted);
+      padding: 6px 8px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #lightbox.open { display: flex; }
+    #lb-img {
+      max-width: min(90vw, 700px);
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 0 80px rgba(153,69,255,.3);
+    }
+    #lb-close {
+      position: fixed;
+      top: 20px; right: 24px;
+      font-size: 28px;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'Space Mono', monospace;
+      transition: color .2s;
+    }
+    #lb-close:hover { color: var(--text); }
+    #lb-caption {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+    footer span { color: var(--accent2); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 50px 20px 40px; }
+      .nft-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+      #gallery { padding: 0 12px 60px; }
+      .gallery-nav { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div id="stars"></div>
+
+<div id="app">
+
+  <header>
+    <div class="hero-badge">Solana</div>
+    <h1 class="site-title">200iq.sol</h1>
+    <p class="sol-sub">Solana Domain Name</p>
+    <p class="about-text">
+      Tipping SOL or Solana-based tokens like USDC is easy — just send directly to <strong style="color:var(--accent2)">200iq.sol</strong>. 
+      I like to collect NFTs. Here is a rather up to date gallery of the NFTs at 200iq.sol:
+    </p>
+
+    <div class="tip-box">
+      <div class="copy-msg" id="copy-msg">Copied!</div>
+      <span class="sol-logo">◎</span>
+      <div class="tip-inner">
+        <div class="tip-label">Send SOL / USDC to</div>
+        <div class="tip-addr">200iq.sol</div>
+      </div>
+    </div>
+    <br/>
+  </header>
+
+  <!-- DIVIDER -->
+  <div class="section-divider"><span class="div-label">NFT Gallery</span></div>
+
+  <!-- GALLERY -->
+  <div id="gallery">
+    
+    <section class="collection-block" id="frogboiz">
+      <div class="col-header">
+        <h2 class="col-title">FrogBoiz</h2>
+        <span class="col-count">67 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0001_FrogBoiz%20_1742.jpg" alt="FrogBoiz #1742" loading="lazy" />
+          </div>
+          <div class="nft-label">#1742</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0006_FrogBoiz%20_1773.jpg" alt="FrogBoiz #1773" loading="lazy" />
+          </div>
+          <div class="nft-label">#1773</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0009_FrogBoiz%20_3295.jpg" alt="FrogBoiz #3295" loading="lazy" />
+          </div>
+          <div class="nft-label">#3295</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0011_FrogBoiz%20_1163.jpg" alt="FrogBoiz #1163" loading="lazy" />
+          </div>
+          <div class="nft-label">#1163</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0019_FrogBoiz%20_734.jpg" alt="FrogBoiz #734" loading="lazy" />
+          </div>
+          <div class="nft-label">#734</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0021_FrogBoiz%20_1131.jpg" alt="FrogBoiz #1131" loading="lazy" />
+          </div>
+          <div class="nft-label">#1131</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0023_FrogBoiz%20_1269.jpg" alt="FrogBoiz #1269" loading="lazy" />
+          </div>
+          <div class="nft-label">#1269</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0031_FrogBoiz%20_1396.jpg" alt="FrogBoiz #1396" loading="lazy" />
+          </div>
+          <div class="nft-label">#1396</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0033_FrogBoiz%20_314.jpg" alt="FrogBoiz #314" loading="lazy" />
+          </div>
+          <div class="nft-label">#314</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0055_FrogBoiz%20_3251.jpg" alt="FrogBoiz #3251" loading="lazy" />
+          </div>
+          <div class="nft-label">#3251</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0063_FrogBoiz%20_761.jpg" alt="FrogBoiz #761" loading="lazy" />
+          </div>
+          <div class="nft-label">#761</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0072_FrogBoiz%20_2914.jpg" alt="FrogBoiz #2914" loading="lazy" />
+          </div>
+          <div class="nft-label">#2914</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0074_FrogBoiz%20_2251.jpg" alt="FrogBoiz #2251" loading="lazy" />
+          </div>
+          <div class="nft-label">#2251</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0082_FrogBoiz%20_1000.jpg" alt="FrogBoiz #1000" loading="lazy" />
+          </div>
+          <div class="nft-label">#1000</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0083_FrogBoiz%20_92.jpg" alt="FrogBoiz #92" loading="lazy" />
+          </div>
+          <div class="nft-label">#92</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0085_FrogBoiz%20_3272.jpg" alt="FrogBoiz #3272" loading="lazy" />
+          </div>
+          <div class="nft-label">#3272</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0087_FrogBoiz%20_528.jpg" alt="FrogBoiz #528" loading="lazy" />
+          </div>
+          <div class="nft-label">#528</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0088_FrogBoiz%20_958.jpg" alt="FrogBoiz #958" loading="lazy" />
+          </div>
+          <div class="nft-label">#958</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0089_FrogBoiz%20_2292.jpg" alt="FrogBoiz #2292" loading="lazy" />
+          </div>
+          <div class="nft-label">#2292</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0091_FrogBoiz%20_544.jpg" alt="FrogBoiz #544" loading="lazy" />
+          </div>
+          <div class="nft-label">#544</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0099_FrogBoiz%20_2026.jpg" alt="FrogBoiz #2026" loading="lazy" />
+          </div>
+          <div class="nft-label">#2026</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0100_FrogBoiz%20_1161.jpg" alt="FrogBoiz #1161" loading="lazy" />
+          </div>
+          <div class="nft-label">#1161</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0103_FrogBoiz%20_2252.jpg" alt="FrogBoiz #2252" loading="lazy" />
+          </div>
+          <div class="nft-label">#2252</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0105_FrogBoiz%20_1122.jpg" alt="FrogBoiz #1122" loading="lazy" />
+          </div>
+          <div class="nft-label">#1122</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0108_FrogBoiz%20_2965.jpg" alt="FrogBoiz #2965" loading="lazy" />
+          </div>
+          <div class="nft-label">#2965</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0109_FrogBoiz%20_592.jpg" alt="FrogBoiz #592" loading="lazy" />
+          </div>
+          <div class="nft-label">#592</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0110_FrogBoiz%20_2356.jpg" alt="FrogBoiz #2356" loading="lazy" />
+          </div>
+          <div class="nft-label">#2356</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0111_FrogBoiz%20_2463.jpg" alt="FrogBoiz #2463" loading="lazy" />
+          </div>
+          <div class="nft-label">#2463</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0113_FrogBoiz%20_2826.jpg" alt="FrogBoiz #2826" loading="lazy" />
+          </div>
+          <div class="nft-label">#2826</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0114_FrogBoiz%20_99.jpg" alt="FrogBoiz #99" loading="lazy" />
+          </div>
+          <div class="nft-label">#99</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0115_FrogBoiz%20_2882.jpg" alt="FrogBoiz #2882" loading="lazy" />
+          </div>
+          <div class="nft-label">#2882</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0116_FrogBoiz%20_349.jpg" alt="FrogBoiz #349" loading="lazy" />
+          </div>
+          <div class="nft-label">#349</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0120_FrogBoiz%20_1486.jpg" alt="FrogBoiz #1486" loading="lazy" />
+          </div>
+          <div class="nft-label">#1486</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0122_FrogBoiz%20_1843.jpg" alt="FrogBoiz #1843" loading="lazy" />
+          </div>
+          <div class="nft-label">#1843</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0124_FrogBoiz%20_905.jpg" alt="FrogBoiz #905" loading="lazy" />
+          </div>
+          <div class="nft-label">#905</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0125_FrogBoiz%20_443.jpg" alt="FrogBoiz #443" loading="lazy" />
+          </div>
+          <div class="nft-label">#443</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0135_FrogBoiz%20_1829.jpg" alt="FrogBoiz #1829" loading="lazy" />
+          </div>
+          <div class="nft-label">#1829</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0137_FrogBoiz%20_1646.jpg" alt="FrogBoiz #1646" loading="lazy" />
+          </div>
+          <div class="nft-label">#1646</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0138_FrogBoiz%20_1367.jpg" alt="FrogBoiz #1367" loading="lazy" />
+          </div>
+          <div class="nft-label">#1367</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0142_FrogBoiz%20_1470.jpg" alt="FrogBoiz #1470" loading="lazy" />
+          </div>
+          <div class="nft-label">#1470</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0151_FrogBoiz%20_2569.jpg" alt="FrogBoiz #2569" loading="lazy" />
+          </div>
+          <div class="nft-label">#2569</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0154_FrogBoiz%20_745.jpg" alt="FrogBoiz #745" loading="lazy" />
+          </div>
+          <div class="nft-label">#745</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0158_FrogBoiz%20_2174.jpg" alt="FrogBoiz #2174" loading="lazy" />
+          </div>
+          <div class="nft-label">#2174</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0162_FrogBoiz%20_484.jpg" alt="FrogBoiz #484" loading="lazy" />
+          </div>
+          <div class="nft-label">#484</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0169_FrogBoiz%20_2571.jpg" alt="FrogBoiz #2571" loading="lazy" />
+          </div>
+          <div class="nft-label">#2571</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0173_FrogBoiz%20_708.jpg" alt="FrogBoiz #708" loading="lazy" />
+          </div>
+          <div class="nft-label">#708</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0174_FrogBoiz%20_1182.jpg" alt="FrogBoiz #1182" loading="lazy" />
+          </div>
+          <div class="nft-label">#1182</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0175_FrogBoiz%20_1012.jpg" alt="FrogBoiz #1012" loading="lazy" />
+          </div>
+          <div class="nft-label">#1012</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0181_FrogBoiz%20_1009.jpg" alt="FrogBoiz #1009" loading="lazy" />
+          </div>
+          <div class="nft-label">#1009</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0183_FrogBoiz%20_1455.jpg" alt="FrogBoiz #1455" loading="lazy" />
+          </div>
+          <div class="nft-label">#1455</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0184_FrogBoiz%20_775.jpg" alt="FrogBoiz #775" loading="lazy" />
+          </div>
+          <div class="nft-label">#775</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0192_FrogBoiz%20_2465.jpg" alt="FrogBoiz #2465" loading="lazy" />
+          </div>
+          <div class="nft-label">#2465</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0201_FrogBoiz%20_272.jpg" alt="FrogBoiz #272" loading="lazy" />
+          </div>
+          <div class="nft-label">#272</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0203_FrogBoiz%20_937.jpg" alt="FrogBoiz #937" loading="lazy" />
+          </div>
+          <div class="nft-label">#937</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0211_FrogBoiz%20_2348.jpg" alt="FrogBoiz #2348" loading="lazy" />
+          </div>
+          <div class="nft-label">#2348</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0212_FrogBoiz%20_176.jpg" alt="FrogBoiz #176" loading="lazy" />
+          </div>
+          <div class="nft-label">#176</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0213_FrogBoiz%20_1353.jpg" alt="FrogBoiz #1353" loading="lazy" />
+          </div>
+          <div class="nft-label">#1353</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0217_FrogBoiz%20_2093.jpg" alt="FrogBoiz #2093" loading="lazy" />
+          </div>
+          <div class="nft-label">#2093</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0218_FrogBoiz%20_1241.jpg" alt="FrogBoiz #1241" loading="lazy" />
+          </div>
+          <div class="nft-label">#1241</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0221_FrogBoiz%20_1136.jpg" alt="FrogBoiz #1136" loading="lazy" />
+          </div>
+          <div class="nft-label">#1136</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0225_FrogBoiz%20_3079.jpg" alt="FrogBoiz #3079" loading="lazy" />
+          </div>
+          <div class="nft-label">#3079</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0230_FrogBoiz%20_71.jpg" alt="FrogBoiz #71" loading="lazy" />
+          </div>
+          <div class="nft-label">#71</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0233_FrogBoiz%20_2913.jpg" alt="FrogBoiz #2913" loading="lazy" />
+          </div>
+          <div class="nft-label">#2913</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0235_FrogBoiz%20_3329.jpg" alt="FrogBoiz #3329" loading="lazy" />
+          </div>
+          <div class="nft-label">#3329</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0241_FrogBoiz%20_1713.jpg" alt="FrogBoiz #1713" loading="lazy" />
+          </div>
+          <div class="nft-label">#1713</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0248_FrogBoiz%20_3015.jpg" alt="FrogBoiz #3015" loading="lazy" />
+          </div>
+          <div class="nft-label">#3015</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0249_FrogBoiz%20_3316.jpg" alt="FrogBoiz #3316" loading="lazy" />
+          </div>
+          <div class="nft-label">#3316</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="lunarian">
+      <div class="col-header">
+        <h2 class="col-title">Lunarian</h2>
+        <span class="col-count">41 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0004_Lunarian%20_8692.jpg" alt="Lunarian #8692" loading="lazy" />
+          </div>
+          <div class="nft-label">#8692</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0015_Lunarian%20_8214.jpg" alt="Lunarian #8214" loading="lazy" />
+          </div>
+          <div class="nft-label">#8214</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0017_Lunarian%20_4101.jpg" alt="Lunarian #4101" loading="lazy" />
+          </div>
+          <div class="nft-label">#4101</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0018_Lunarian%20_2847.jpg" alt="Lunarian #2847" loading="lazy" />
+          </div>
+          <div class="nft-label">#2847</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0025_Lunarian%20_7891.jpg" alt="Lunarian #7891" loading="lazy" />
+          </div>
+          <div class="nft-label">#7891</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0027_Lunarian%20_8677.jpg" alt="Lunarian #8677" loading="lazy" />
+          </div>
+          <div class="nft-label">#8677</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0032_Lunarian%20_2112.jpg" alt="Lunarian #2112" loading="lazy" />
+          </div>
+          <div class="nft-label">#2112</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0041_Lunarian%20_5660.jpg" alt="Lunarian #5660" loading="lazy" />
+          </div>
+          <div class="nft-label">#5660</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0048_Lunarian%20_6422.jpg" alt="Lunarian #6422" loading="lazy" />
+          </div>
+          <div class="nft-label">#6422</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0053_Lunarian%20_4831.jpg" alt="Lunarian #4831" loading="lazy" />
+          </div>
+          <div class="nft-label">#4831</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0064_Lunarian%20_2949.jpg" alt="Lunarian #2949" loading="lazy" />
+          </div>
+          <div class="nft-label">#2949</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0073_Lunarian%20_89.jpg" alt="Lunarian #89" loading="lazy" />
+          </div>
+          <div class="nft-label">#89</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0081_Lunarian%20_3273.jpg" alt="Lunarian #3273" loading="lazy" />
+          </div>
+          <div class="nft-label">#3273</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0095_Lunarian%20_2851.jpg" alt="Lunarian #2851" loading="lazy" />
+          </div>
+          <div class="nft-label">#2851</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0098_Lunarian%20_8726.jpg" alt="Lunarian #8726" loading="lazy" />
+          </div>
+          <div class="nft-label">#8726</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0106_Lunarian%20_3101.jpg" alt="Lunarian #3101" loading="lazy" />
+          </div>
+          <div class="nft-label">#3101</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0117_Lunarian%20_6827.jpg" alt="Lunarian #6827" loading="lazy" />
+          </div>
+          <div class="nft-label">#6827</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0118_Lunarian%20_2148.jpg" alt="Lunarian #2148" loading="lazy" />
+          </div>
+          <div class="nft-label">#2148</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0130_Lunarian%20_387.jpg" alt="Lunarian #387" loading="lazy" />
+          </div>
+          <div class="nft-label">#387</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0132_Lunarian%20_6877.jpg" alt="Lunarian #6877" loading="lazy" />
+          </div>
+          <div class="nft-label">#6877</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0134_Lunarian%20_6901.jpg" alt="Lunarian #6901" loading="lazy" />
+          </div>
+          <div class="nft-label">#6901</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0141_Lunarian%20_50.jpg" alt="Lunarian #50" loading="lazy" />
+          </div>
+          <div class="nft-label">#50</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0144_Lunarian%20_3629.jpg" alt="Lunarian #3629" loading="lazy" />
+          </div>
+          <div class="nft-label">#3629</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0155_Lunarian%20_824.jpg" alt="Lunarian #824" loading="lazy" />
+          </div>
+          <div class="nft-label">#824</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0163_Lunarian%20_3324.jpg" alt="Lunarian #3324" loading="lazy" />
+          </div>
+          <div class="nft-label">#3324</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0167_Lunarian%20_4990.jpg" alt="Lunarian #4990" loading="lazy" />
+          </div>
+          <div class="nft-label">#4990</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0168_Lunarian%20_3011.jpg" alt="Lunarian #3011" loading="lazy" />
+          </div>
+          <div class="nft-label">#3011</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0172_Lunarian%20_743.jpg" alt="Lunarian #743" loading="lazy" />
+          </div>
+          <div class="nft-label">#743</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0178_Lunarian%20_4762.jpg" alt="Lunarian #4762" loading="lazy" />
+          </div>
+          <div class="nft-label">#4762</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0180_Lunarian%20_3035.jpg" alt="Lunarian #3035" loading="lazy" />
+          </div>
+          <div class="nft-label">#3035</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0185_Lunarian%20_5203.jpg" alt="Lunarian #5203" loading="lazy" />
+          </div>
+          <div class="nft-label">#5203</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0187_Lunarian%20_4770.jpg" alt="Lunarian #4770" loading="lazy" />
+          </div>
+          <div class="nft-label">#4770</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0196_Lunarian%20_5519.jpg" alt="Lunarian #5519" loading="lazy" />
+          </div>
+          <div class="nft-label">#5519</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0197_Lunarian%20_8707.jpg" alt="Lunarian #8707" loading="lazy" />
+          </div>
+          <div class="nft-label">#8707</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0200_Lunarian%20_6106.jpg" alt="Lunarian #6106" loading="lazy" />
+          </div>
+          <div class="nft-label">#6106</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0207_Lunarian%20_7309.jpg" alt="Lunarian #7309" loading="lazy" />
+          </div>
+          <div class="nft-label">#7309</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0208_Lunarian%20_280.jpg" alt="Lunarian #280" loading="lazy" />
+          </div>
+          <div class="nft-label">#280</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0227_Lunarian%20_2110.jpg" alt="Lunarian #2110" loading="lazy" />
+          </div>
+          <div class="nft-label">#2110</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0229_Lunarian%20_7273.jpg" alt="Lunarian #7273" loading="lazy" />
+          </div>
+          <div class="nft-label">#7273</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0245_Lunarian%20_6619.jpg" alt="Lunarian #6619" loading="lazy" />
+          </div>
+          <div class="nft-label">#6619</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0251_Lunarian%20_3896.jpg" alt="Lunarian #3896" loading="lazy" />
+          </div>
+          <div class="nft-label">#3896</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="blood-moon-lunarian">
+      <div class="col-header">
+        <h2 class="col-title">Blood Moon Lunarian</h2>
+        <span class="col-count">18 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0029_Blood%20Moon%20Lunarian%20_749.jpg" alt="Blood Moon Lunarian #749" loading="lazy" />
+          </div>
+          <div class="nft-label">#749</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0030_Blood%20Moon%20Lunarian%20_627.jpg" alt="Blood Moon Lunarian #627" loading="lazy" />
+          </div>
+          <div class="nft-label">#627</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0039_Blood%20Moon%20Lunarian%20_180.jpg" alt="Blood Moon Lunarian #180" loading="lazy" />
+          </div>
+          <div class="nft-label">#180</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0050_Blood%20Moon%20Lunarian%20_245.jpg" alt="Blood Moon Lunarian #245" loading="lazy" />
+          </div>
+          <div class="nft-label">#245</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0051_Blood%20Moon%20Lunarian%20_89.jpg" alt="Blood Moon Lunarian #89" loading="lazy" />
+          </div>
+          <div class="nft-label">#89</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0056_Blood%20Moon%20Lunarian%20_165.jpg" alt="Blood Moon Lunarian #165" loading="lazy" />
+          </div>
+          <div class="nft-label">#165</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0086_Blood%20Moon%20Lunarian%20_626.jpg" alt="Blood Moon Lunarian #626" loading="lazy" />
+          </div>
+          <div class="nft-label">#626</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0126_Blood%20Moon%20Lunarian%20_305.jpg" alt="Blood Moon Lunarian #305" loading="lazy" />
+          </div>
+          <div class="nft-label">#305</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0127_Blood%20Moon%20Lunarian%20_237.jpg" alt="Blood Moon Lunarian #237" loading="lazy" />
+          </div>
+          <div class="nft-label">#237</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0140_Blood%20Moon%20Lunarian%20_72.jpg" alt="Blood Moon Lunarian #72" loading="lazy" />
+          </div>
+          <div class="nft-label">#72</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0157_Blood%20Moon%20Lunarian%20_912.jpg" alt="Blood Moon Lunarian #912" loading="lazy" />
+          </div>
+          <div class="nft-label">#912</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0179_Blood%20Moon%20Lunarian%20_738.jpg" alt="Blood Moon Lunarian #738" loading="lazy" />
+          </div>
+          <div class="nft-label">#738</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0189_Blood%20Moon%20Lunarian%20_509.jpg" alt="Blood Moon Lunarian #509" loading="lazy" />
+          </div>
+          <div class="nft-label">#509</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0194_Blood%20Moon%20Lunarian%20_955.jpg" alt="Blood Moon Lunarian #955" loading="lazy" />
+          </div>
+          <div class="nft-label">#955</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0214_Blood%20Moon%20Lunarian%20_31.jpg" alt="Blood Moon Lunarian #31" loading="lazy" />
+          </div>
+          <div class="nft-label">#31</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0238_Blood%20Moon%20Lunarian%20_148.jpg" alt="Blood Moon Lunarian #148" loading="lazy" />
+          </div>
+          <div class="nft-label">#148</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0243_Blood%20Moon%20Lunarian%20_238.jpg" alt="Blood Moon Lunarian #238" loading="lazy" />
+          </div>
+          <div class="nft-label">#238</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0246_Blood%20Moon%20Lunarian%20_174.jpg" alt="Blood Moon Lunarian #174" loading="lazy" />
+          </div>
+          <div class="nft-label">#174</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="miniverse-weapon">
+      <div class="col-header">
+        <h2 class="col-title">Miniverse Weapon</h2>
+        <span class="col-count">8 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0002_Miniverse%20Weapon%20_19700.png" alt="Miniverse Weapon #19700" loading="lazy" />
+          </div>
+          <div class="nft-label">#19700</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0042_Miniverse%20Weapon%20_183671.png" alt="Miniverse Weapon #183671" loading="lazy" />
+          </div>
+          <div class="nft-label">#183671</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0058_Miniverse%20Weapon%20_189907.png" alt="Miniverse Weapon #189907" loading="lazy" />
+          </div>
+          <div class="nft-label">#189907</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0071_Miniverse%20Weapon%20_121013.png" alt="Miniverse Weapon #121013" loading="lazy" />
+          </div>
+          <div class="nft-label">#121013</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0075_Miniverse%20Weapon%20_184784.png" alt="Miniverse Weapon #184784" loading="lazy" />
+          </div>
+          <div class="nft-label">#184784</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0150_Miniverse%20Weapon%20_189058.png" alt="Miniverse Weapon #189058" loading="lazy" />
+          </div>
+          <div class="nft-label">#189058</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0190_Miniverse%20Weapon%20_182950.png" alt="Miniverse Weapon #182950" loading="lazy" />
+          </div>
+          <div class="nft-label">#182950</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0199_Miniverse%20Weapon%20_187494.png" alt="Miniverse Weapon #187494" loading="lazy" />
+          </div>
+          <div class="nft-label">#187494</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="chipped-moonstone">
+      <div class="col-header">
+        <h2 class="col-title">Chipped Moonstone</h2>
+        <span class="col-count">4 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0052_Chipped%20Moonstone.jpg" alt="Chipped Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0159_Chipped%20Moonstone.jpg" alt="Chipped Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0198_Chipped%20Moonstone.jpg" alt="Chipped Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0226_Chipped%20Moonstone.jpg" alt="Chipped Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="unika-nightmare">
+      <div class="col-header">
+        <h2 class="col-title">Unika Nightmare</h2>
+        <span class="col-count">3 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0008_Unika%20Nightmare.jpg" alt="Unika Nightmare " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0066_Unika%20Nightmare.jpg" alt="Unika Nightmare " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0129_Unika%20Nightmare.jpg" alt="Unika Nightmare " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="helios-3d">
+      <div class="col-header">
+        <h2 class="col-title">Helios 3D</h2>
+        <span class="col-count">3 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0020_Helios%203D.jpg" alt="Helios 3D " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0204_Helios%203D.jpg" alt="Helios 3D " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0231_Helios%203D.jpg" alt="Helios 3D " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="bitebit-artwork">
+      <div class="col-header">
+        <h2 class="col-title">Bitebit Artwork</h2>
+        <span class="col-count">3 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0043_Bitebit%20Artwork.jpg" alt="Bitebit Artwork " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0128_Bitebit%20Artwork.jpg" alt="Bitebit Artwork " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0220_Bitebit%20Artwork.jpg" alt="Bitebit Artwork " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="fractured-moonstone">
+      <div class="col-header">
+        <h2 class="col-title">Fractured Moonstone</h2>
+        <span class="col-count">3 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0094_Fractured%20Moonstone.jpg" alt="Fractured Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0165_Fractured%20Moonstone.jpg" alt="Fractured Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0239_Fractured%20Moonstone.jpg" alt="Fractured Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="miniverse-hero">
+      <div class="col-header">
+        <h2 class="col-title">Miniverse Hero</h2>
+        <span class="col-count">3 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0097_Miniverse%20Hero%20_04388.jpg" alt="Miniverse Hero #04388" loading="lazy" />
+          </div>
+          <div class="nft-label">#04388</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0107_Miniverse%20Hero%20_08946.jpg" alt="Miniverse Hero #08946" loading="lazy" />
+          </div>
+          <div class="nft-label">#08946</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0143_Miniverse%20Hero%20_03644.jpg" alt="Miniverse Hero #03644" loading="lazy" />
+          </div>
+          <div class="nft-label">#03644</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="n9cheshire">
+      <div class="col-header">
+        <h2 class="col-title">N9Cheshire</h2>
+        <span class="col-count">2 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0003_N9Cheshire.jpg" alt="N9Cheshire " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0156_N9Cheshire.jpg" alt="N9Cheshire " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="cryptopet">
+      <div class="col-header">
+        <h2 class="col-title">CryptoPet</h2>
+        <span class="col-count">2 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0034_CryptoPet%20_4109.jpg" alt="CryptoPet #4109" loading="lazy" />
+          </div>
+          <div class="nft-label">#4109</div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0061_CryptoPet%20_7471.jpg" alt="CryptoPet #7471" loading="lazy" />
+          </div>
+          <div class="nft-label">#7471</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="perfect-moonstone">
+      <div class="col-header">
+        <h2 class="col-title">Perfect Moonstone</h2>
+        <span class="col-count">2 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0093_Perfect%20Moonstone.jpg" alt="Perfect Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0149_Perfect%20Moonstone.jpg" alt="Perfect Moonstone " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="axopumpkin">
+      <div class="col-header">
+        <h2 class="col-title">Axopumpkin</h2>
+        <span class="col-count">2 NFTs</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0139_Axopumpkin.jpg" alt="Axopumpkin " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+<div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0171_Axopumpkin.jpg" alt="Axopumpkin " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="pit-sucks">
+      <div class="col-header">
+        <h2 class="col-title">Pit Sucks</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0044_Pit%20Sucks.jpg" alt="Pit Sucks " loading="lazy" />
+          </div>
+          <div class="nft-label"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="jetstream-scamp">
+      <div class="col-header">
+        <h2 class="col-title">Jetstream Scamp</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0046_Jetstream%20Scamp%20_5015.gif" alt="Jetstream Scamp #5015" loading="lazy" />
+          </div>
+          <div class="nft-label">#5015</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="the-red-warmachine">
+      <div class="col-header">
+        <h2 class="col-title">The Red Warmachine</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0070_The%20Red%20Warmachine%20_5015.png" alt="The Red Warmachine #5015" loading="lazy" />
+          </div>
+          <div class="nft-label">#5015</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="solsunsets">
+      <div class="col-header">
+        <h2 class="col-title">Solsunsets</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0076_Solsunsets%20_317.jpg" alt="Solsunsets #317" loading="lazy" />
+          </div>
+          <div class="nft-label">#317</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="angel-bear">
+      <div class="col-header">
+        <h2 class="col-title">Angel Bear</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0102_Angel%20Bear%20_5516.gif" alt="Angel Bear #5516" loading="lazy" />
+          </div>
+          <div class="nft-label">#5516</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="nfteyez-pass">
+      <div class="col-header">
+        <h2 class="col-title">NftEyez Pass</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0146_NftEyez%20Pass%20_1379.jpg" alt="NftEyez Pass #1379" loading="lazy" />
+          </div>
+          <div class="nft-label">#1379</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="furious-flower">
+      <div class="col-header">
+        <h2 class="col-title">Furious Flower</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0193_Furious%20Flower%20_4017.jpg" alt="Furious Flower #4017" loading="lazy" />
+          </div>
+          <div class="nft-label">#4017</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="plated-artillery">
+      <div class="col-header">
+        <h2 class="col-title">Plated Artillery</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0210_Plated%20Artillery%20_4068.png" alt="Plated Artillery #4068" loading="lazy" />
+          </div>
+          <div class="nft-label">#4068</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="exiledape-391-518">
+      <div class="col-header">
+        <h2 class="col-title">ExiledApe 391_518</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0216_ExiledApe%20391_518.jpg" alt="ExiledApe 391_518 #518" loading="lazy" />
+          </div>
+          <div class="nft-label">#518</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="neopet">
+      <div class="col-header">
+        <h2 class="col-title">Neopet</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0219_Neopet%20_1391.jpg" alt="Neopet #1391" loading="lazy" />
+          </div>
+          <div class="nft-label">#1391</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="delicate-universal-tank">
+      <div class="col-header">
+        <h2 class="col-title">Delicate Universal Tank</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0234_Delicate%20Universal%20Tank%20_5516.png" alt="Delicate Universal Tank #5516" loading="lazy" />
+          </div>
+          <div class="nft-label">#5516</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="collection-block" id="venom-jackson">
+      <div class="col-header">
+        <h2 class="col-title">Venom Jackson</h2>
+        <span class="col-count">1 NFT</span>
+      </div>
+      <div class="nft-grid">
+        <div class="nft-card">
+          <div class="nft-img-wrap">
+            <img src="nft_images/0236_Venom%20Jackson%20_4068.gif" alt="Venom Jackson #4068" loading="lazy" />
+          </div>
+          <div class="nft-label">#4068</div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <span>200iq.sol</span>
+  </footer>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt="" />
+  <div id="lb-caption"></div>
+</div>
+
+<script>
+  // ── Starfield
+  (function() {
+    const el = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2 + .5;
+      const minO = (Math.random() * .2).toFixed(2);
+      const maxO = (Math.random() * .5 + .3).toFixed(2);
+      const dur = (Math.random() * 4 + 2).toFixed(1) + 's';
+      Object.assign(s.style, {
+        width: size + 'px', height: size + 'px',
+        top: Math.random() * 100 + '%',
+        left: Math.random() * 100 + '%',
+        '--d': dur, '--min-o': minO, '--max-o': maxO,
+        animationDelay: (Math.random() * 5).toFixed(1) + 's'
+      });
+      el.appendChild(s);
+    }
+  })();
+
+  // ── Copy address
+  function copyAddr(el) {
+    navigator.clipboard.writeText('200iq.sol').then(() => {
+      const msg = document.getElementById('copy-msg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 1800);
+    });
+  }
+
+  // ── Lightbox
+  document.querySelectorAll('.nft-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const img = card.querySelector('img');
+      const label = card.querySelector('.nft-label').textContent.trim();
+      const colTitle = card.closest('.collection-block').querySelector('.col-title').textContent.trim();
+      document.getElementById('lb-img').src = img.src;
+      document.getElementById('lb-img').alt = img.alt;
+      document.getElementById('lb-caption').textContent = colTitle + '  ' + label;
+      document.getElementById('lightbox').classList.add('open');
+    });
+  });
+
+  function closeLb() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeLb();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+</script>
+</body>
+</html>
