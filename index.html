@@ -496,6 +496,103 @@
       font-family: 'Space Mono', monospace;
     }
 
+    /* ── MARKETPLACE TABLE ── */
+    #marketplace {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .market-section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .market-section-divider .div-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .market-section-divider::before,
+    .market-section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+    }
+    .market-section-divider::before { background: linear-gradient(90deg, transparent, var(--border)); }
+    .market-section-divider::after  { background: linear-gradient(90deg, var(--border), transparent); }
+    .market-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Space Mono', monospace;
+    }
+    .market-table thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+    .market-table th {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 400;
+      padding: 0 16px 12px;
+      text-align: left;
+    }
+    .market-table th:last-child { text-align: right; }
+    .market-table tbody tr {
+      border-bottom: 1px solid rgba(30,45,71,0.5);
+      transition: background .15s;
+    }
+    .market-table tbody tr:last-child { border-bottom: none; }
+    .market-table tbody tr:hover { background: rgba(153,69,255,0.04); }
+    .market-table td {
+      padding: 14px 16px;
+      vertical-align: middle;
+    }
+    .market-table td:last-child { text-align: right; }
+    .mkt-col-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .mkt-platform {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .mkt-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #000;
+      background: var(--accent2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: opacity .15s, box-shadow .15s, transform .15s;
+      white-space: nowrap;
+    }
+    .mkt-btn:hover {
+      opacity: 0.88;
+      box-shadow: 0 0 16px rgba(20,241,149,0.3);
+      transform: translateY(-1px);
+    }
+    .mkt-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .mkt-row-aurorians .mkt-col-name { color: #c084fc; }
+    .mkt-row-frogboiz   .mkt-col-name { color: #4ade80; }
+    .mkt-row-lunarian   .mkt-col-name { color: #38bdf8; }
+    .mkt-row-bloodmoon  .mkt-col-name { color: #f87171; }
+    .mkt-row-panzerdogs .mkt-col-name { color: #fbbf24; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       header { padding: 50px 20px 40px; }
@@ -504,6 +601,9 @@
       .gallery-nav { padding: 0 12px; }
       #aurorians-featured { padding: 0 12px; }
       .aurorians-grid { gap: 10px; }
+      #marketplace { padding: 0 12px 48px; }
+      .mkt-col-name { font-size: 13px; }
+      .mkt-btn { font-size: 10px; padding: 7px 12px; }
     }
   </style>
 </head>
@@ -1868,6 +1968,72 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- ══ MARKETPLACE TABLE ══ -->
+  <div id="marketplace">
+    <div class="market-section-divider"><span class="div-label">Marketplaces</span></div>
+    <table class="market-table">
+      <thead>
+        <tr>
+          <th>Collection</th>
+          <th>Platform</th>
+          <th>Trade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="mkt-row-aurorians">
+          <td><div class="mkt-col-name">Aurorians</div></td>
+          <td><div class="mkt-platform">Tensor</div></td>
+          <td>
+            <a class="mkt-btn" href="https://www.tensor.trade/trade/aurorians" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Tensor
+            </a>
+          </td>
+        </tr>
+        <tr class="mkt-row-frogboiz">
+          <td><div class="mkt-col-name">FrogBoiz</div></td>
+          <td><div class="mkt-platform">Tensor</div></td>
+          <td>
+            <a class="mkt-btn" href="https://www.tensor.trade/trade/frogboiz" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Tensor
+            </a>
+          </td>
+        </tr>
+        <tr class="mkt-row-lunarian">
+          <td><div class="mkt-col-name">Lunarian</div></td>
+          <td><div class="mkt-platform">Tensor</div></td>
+          <td>
+            <a class="mkt-btn" href="https://www.tensor.trade/trade/folktales_of_lunaria" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Tensor
+            </a>
+          </td>
+        </tr>
+        <tr class="mkt-row-bloodmoon">
+          <td><div class="mkt-col-name">Blood Moon Lunarian</div></td>
+          <td><div class="mkt-platform">Tensor</div></td>
+          <td>
+            <a class="mkt-btn" href="https://www.tensor.trade/trade/folktales_of_lunaria_blood_moon_lunarians" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Tensor
+            </a>
+          </td>
+        </tr>
+        <tr class="mkt-row-panzerdogs">
+          <td><div class="mkt-col-name">Panzerdogs</div></td>
+          <td><div class="mkt-platform">Tensor</div></td>
+          <td>
+            <a class="mkt-btn" href="https://www.tensor.trade/trade/panzerdogs" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Tensor
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <footer>
